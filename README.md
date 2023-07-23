@@ -1,5 +1,6 @@
-**KEEPMESAFE! 
-**
+KEEPMESAFE!
+
+
 KEEPMESAFE! was designed with the sole goal, for people to become more aware of malware and phishing.
 
 The program featuers 3 modes: Website Scanning, File Scanning, Safety Advice
