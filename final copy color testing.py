@@ -35,7 +35,7 @@ def insertText(T, content): #inserts text and updates the textbox to show the mo
 
 class App(ck.CTk): 
     def __init__(self): 
-        super().__init__() #inherits all the components from the tk.Tk() tkinter class 
+        super().__init__() #inherits all the components from the ck.CTk() customtkinter class 
         ck.set_appearance_mode("dark")
         ck.set_default_color_theme("dark-blue")
         self.main_menu() #calling upon main_menu function to build widgets
@@ -70,11 +70,11 @@ class fileScan(ck.CTkFrame): #inherts the root window (as we don't want new wind
     quickScanUploadError = "\n\nTHERE WAS AN ERROR UPLOADING YOUR SELECTED FILE, PERHAPS YOUR TYPE OF FILE IS NOT SUPPORTED IN THIS MODE. TRY USING THE ADVANCED SCAN FEATURE INSTEAD."
     quickScanSizeError = "\n\nYOUR SELECTED FILE EXCEEDED THE SIZE LIMIT OF 3MB. TO UPLOAD THIS FILE, USE THE ADVANCED SCAN OPTION INSTEAD"
     quickScanCleanResult = "\n\nAccording to a quick scan of your file, there were no threats detected on it. If you've downloaded this from a reputable site (such as Microsoft, Adobe etc), you will be fine. However, if you've downloaded this off of a site you're not too familiar with, I recommend that you run the file through the advanced scan as well, this is because malware that hasn't been spread to a lot of computers will not get picked up under the quick scan feature."
-    quickScanMaliciousResult = "\n\nAfter an analysis of your file, we've found malicious content within the file that could be harmful for your computer. Do not open this file, instead permanently delete that. If you've already opened this file, then I recommend you use an antivirus software such as MalwareBytes or McAfee to try quarantine and remove the file from your system. If that doesn't work, I recommend that you reset your system back to your computer's last restore point, you can find how to do this on Youtube. Be wary of the files that you download from the internet."
+    quickScanMaliciousResult = "\n\nAfter an analysis of your file, we've found malicious content within the file that could be harmful for your computer. Do not open this file, instead permanently delete it. If you've already opened this file, then I recommend you use an antivirus software such as MalwareBytes or McAfee to try quarantine and remove the file from your system. If that doesn't work, I recommend that you reset your system back to your computer's last restore point, you can find how to do this on Youtube. Be wary of the files that you download from the internet."
     quickScanGuide = "Select your file by clicking the 'CHOOSE FILE' button above. Once you've selected the file, you may choose between a 'QUICK SCAN' or an 'ADVANCED SCAN' of the file by clicking the respective button on the right-hand side."
-    advancedScan_nonMalicious = "\n\nIt's likely that the file you've submitted does not oontain any type of virus and is safe to use. However, some malware that is brand-new and hasn't been seen before is not likely to get picked up as malicious, therefore ensure the authenticity of this file... ensure you've downloaded it directly from the application's page and not frmo a third party to keep yourself safe."
+    advancedScan_nonMalicious = "\n\nIt's likely that the file you've submitted does not oontain any type of virus and is safe to use. However, some malware that is brand-new and hasn't been seen before is not likely to get picked up as malicious, therefore ensure the authenticity of this file... ensure you've downloaded it directly from the application's page and not from a third party to keep yourself safe."
     advancedScan_lilMalicious = "\n\nThe file has been flagged by a few scanners, they may be false-positives (falsley detected as malicious) but treat this file with caution. Ensure you've downloaded it from a reputable website and that it's absolutely necessary to use. For safety, I recommend using this file within a virtual machine so that if the file does contain malware, your actual machine will be safe (as only the virtual machine would be affected)."
-    advancedScan_veryMalicious = "\n\nThe file you've submitted has been flagged by multiple scanners, it is likely that this file contains malware. Permanently delete this file from your system, DO NOT OPEN IT. If you'd like to learn more information about malware, you can restart the program and select 'Safety Advice'."
+    advancedScan_veryMalicious = "\n\nThe file you've submitted has been flagged by multiple scanners, it's very likely that this file contains malware. Permanently delete this file from your system, DO NOT OPEN IT. If you'd like to learn more information about malware, you can navigate to the Main Menu and select Safety Advice."
 
             
     def __init__(self,parent): #initialises instance, clears all existing widgets, sets up frames to prepare for new widgets
@@ -145,6 +145,7 @@ class fileScan(ck.CTkFrame): #inherts the root window (as we don't want new wind
             except:
                 #in case of an error uploading the to the cluoudmerisve api
                 insertText(T,self.quickScanUploadError)
+                return
             #print(response.content)
             #print(response.text)
             if 'Input file was larger than the limit' in str(response.content):
@@ -255,7 +256,7 @@ class fileScan(ck.CTkFrame): #inherts the root window (as we don't want new wind
             elif file_stats['malicious'] >=6:
                 insertText(T,self.advancedScan_veryMalicious)
                 #insertText(T,"\n\nThe file you've submitted has been flagged by multiple scanners, it is likely that this file contains malware. Permanently delete this file from your system, DO NOT OPEN IT. If you'd like to learn more information about malware, you can restart the program and select 'Safety Advice'.")
-            check_save = messagebox.askyesno("Save File", "Do you want to save this file?") #asks user if they'd like to save report of their scanned file
+            check_save = messagebox.askyesno("Save File Report", "Do you want to save this file's scan report?") #asks user if they'd like to save report of their scanned file
             if check_save: #if they answer yes
                 try:
                     saveName = file_name.replace('.', ' ') 
@@ -288,7 +289,7 @@ class websiteScan(ck.CTkFrame): #inherits the root window from App (so more wind
         frame = ck.CTkFrame(root)
         frame.pack(fill=ck.BOTH,expand=True)
         myFrame = ck.CTkFrame(frame)
-        myFrame.pack(side=ck.BOTTOM)
+        myFrame.pack(side=ck.BOTTOM,pady=10)
         self.create_widgets(frame,myFrame,parent)
 
     def create_widgets(self,frame,myFrame,parent): #setting up widgets and layout for websiteScan mode 
@@ -298,66 +299,70 @@ class websiteScan(ck.CTkFrame): #inherits the root window from App (so more wind
         link_button = ck.CTkButton(myFrame,text='SCAN URL',command=lambda:self.scanURL(E,T))
         link_button.pack(side=ck.LEFT)
         E.pack(side=ck.LEFT,padx=(5,20))
-        mainMenu_button.pack(side=ck.LEFT,pady=10)
+        mainMenu_button.pack(side=ck.LEFT)
         T.pack(padx=20,pady=(10,0),fill=ck.BOTH,expand=True)
         T.cget("font").configure(size=18)
         insertText(T, "Enter the URL of the website you would like to scan in the white-space entry box below, next to the 'SCAN URL' button.")
         
     def scanURL(self,E,T): #scanning function, called upon when 'SCAN URL' button is pressed
         link = E.get()
-        T.delete("1.0", tk.END)
-        if not '.' in link: #used to detect invalid url, as url contains '.' in them always so this is used to make the user enter a proper url (something.com) instead of somethingcom.
-            messagebox.showinfo("Invalid Link", "You entered an invalid link, please double-check your input and try again.")
-            return
-        if ' ' in link:
-            link.replace(' ','')
-       
-        def remove_slash_in_domain(url): #better error handling detection  of incorrect https:// spelling or typos in URL e.g httssp://google.com turns into google.com, done with the use of regex 
-            url = re.sub(r'^([^/]+)/', r'\1', url)
-            cleaned_url = re.sub(r'^.*?/', '', url)
-            cleaned_url = re.sub(r'\/+(?=\.)', '', cleaned_url)
-            return cleaned_url
-        link = remove_slash_in_domain(link) #cleaning user-input errors, if any
-        link = 'https://' + link #adds https:// to link (this is to account for any typos with https:// the user may have done or if the user did not include https:// at all.
-        insertText(T,'SCANNING...')
-        url_id = base64.urlsafe_b64encode(link.encode()).decode().strip("=") #used to encode the url into a format that the API can read
-        count = 0
-        headers = {
-        'x-apikey': 'a5c84ce0b02389f1df6ad30367f31568425726be1fe3dbebd9aa1e114a84f41f', #used to authenticate my request
-        }
-        response = requests.get('https://www.virustotal.com/api/v3/urls/' +  url_id, headers=headers) #creating a request to get information about the website 
-        data = json.loads(response.content) #converting the content of the response into a json format to be able to read the data more easily
-        try:
-            stats = data['data']['attributes']['last_analysis_stats']
-        except:
-            insertText(T, "\n\nWe ran into an issue trying to scan this website, perhaps the website " + str(link) + " doesn't exist? If the website does exist and this problem persits, you can scan this website online with google, simply search for 'scan website google safe browsing' and click on the second link then follow the steps mentioned on there. Feel free to scan another website by pressing the 'Main Menu' button below.")
-            return
-        
-        #printing what category the website falls under according to reports of the website from external sources.
-        try:
-            insertText(T,  f"\n\nThe website ({data['data']['attributes']['last_final_url']}) is based around: {data['data']['attributes']['categories']['alphaMountain.ai']}.")
-        except:
-            try:
-                if data['data']['attributes']['categories']['alphaMountain.ai'] == 'Unrated':
-                   insertText(T, " This may potentially be a new website, be careful.\n") #if category is unrated, may indicate that website is brand new hence my warning
-            except:
-                pass
-            
-        #telling user how many scanners the website submitted was detected as malicious by, out of 90 total scanners that are used in VirusTotal api for web scanning.
-        T.insert(tk.END, "\n\nAccording to our analysis, the website: " + data['data']['attributes']['last_final_url'] + " is detected as malicious by " + str(stats['malicious']) + ' malware/phishing scanners (out of 90)')
-        if stats['malicious'] > 0:
-            err = str(data['data']['attributes']['last_analysis_results'])
-            malicious_reason = err.count('malicious') - stats['malicious']
-            #details the type of malicious activity that's been detected on the website the user hass submitted
-            T.insert(tk.END,". Some reasons behind the detections were:\n  " + str(malicious_reason) + " reports of malicious activity.\n  " + str(err.count('phishing')) + " reports of phishing.")
+        def scan(link):
+                T.delete("1.0", tk.END)
+                if not '.' in link: #used to detect invalid url, as url contains '.' in them always so this is used to make the user enter a proper url (something.com) instead of somethingcom.
+                    messagebox.showinfo("Invalid Link", "You entered an invalid link, please double-check your input and try again.")
+                    return
+                if ' ' in link:
+                    link.replace(' ','')
+               
+                def remove_slash_in_domain(url): #better error handling detection  of incorrect https:// spelling or typos in URL e.g httssp://google.com turns into google.com, done with the use of regex 
+                    url = re.sub(r'^([^/]+)/', r'\1', url)
+                    cleaned_url = re.sub(r'^.*?/', '', url)
+                    cleaned_url = re.sub(r'\/+(?=\.)', '', cleaned_url)
+                    return cleaned_url
+                link = remove_slash_in_domain(link) #cleaning user-input errors, if any
+                link = 'https://' + link #adds https:// to link (this is to account for any typos with https:// the user may have done or if the user did not include https:// at all.
+                insertText(T,'SCANNING...')
+                url_id = base64.urlsafe_b64encode(link.encode()).decode().strip("=") #used to encode the url into a format that the API can read
+                count = 0
+                headers = {
+                'x-apikey': 'a5c84ce0b02389f1df6ad30367f31568425726be1fe3dbebd9aa1e114a84f41f', #used to authenticate my request
+                }
+                response = requests.get('https://www.virustotal.com/api/v3/urls/' +  url_id, headers=headers) #creating a request to get information about the website 
+                data = json.loads(response.content) #converting the content of the response into a json format to be able to read the data more easily
+                try:
+                    stats = data['data']['attributes']['last_analysis_stats']
+                except:
+                    insertText(T, "\n\nWe ran into an issue trying to scan this website, perhaps the website " + str(link) + " doesn't exist? If the website does exist and this problem persits, you can scan this website online with google, simply search for 'scan website google safe browsing' and click on the second link then follow the steps mentioned on there. Feel free to scan another website by pressing the 'Main Menu' button below.")
+                    return
+                
+                #printing what category the website falls under according to reports of the website from external sources.
+                try:
+                    insertText(T,  f"\n\nThe website ({data['data']['attributes']['last_final_url']}) is based around: {data['data']['attributes']['categories']['alphaMountain.ai']}.")
+                except:
+                    try:
+                        if data['data']['attributes']['categories']['alphaMountain.ai'] == 'Unrated':
+                           insertText(T, " This may potentially be a new website, be careful.\n") #if category is unrated, may indicate that website is brand new hence my warning
+                    except:
+                        pass
+                    
+                #telling user how many scanners the website submitted was detected as malicious by, out of 90 total scanners that are used in VirusTotal api for web scanning.
+                T.insert(tk.END, "\n\nAccording to our analysis, the website: " + data['data']['attributes']['last_final_url'] + " is detected as malicious by " + str(stats['malicious']) + ' malware/phishing scanners (out of 90)')
+                if stats['malicious'] > 0:
+                    err = str(data['data']['attributes']['last_analysis_results'])
+                    malicious_reason = err.count('malicious') - stats['malicious']
+                    #details the type of malicious activity that's been detected on the website the user hass submitted
+                    T.insert(tk.END,". Some reasons behind the detections were:\n  " + str(malicious_reason) + " reports of malicious activity.\n  " + str(err.count('phishing')) + " reports of phishing.")
 
-        #prints advice to the user based on how many reports of malicious activity the website had.
-        if stats['malicious'] > 0 and stats['malicious'] <= 5:
-            insertText(T, self.websiteScan_lilMalicious)
-        if stats['malicious'] >= 6:
-            insertText(T, self.websiteScan_veryMalicious)
-        if stats['malicious'] == 0:
-            insertText(T, self.websiteScan_nonMalicious)
+                #prints advice to the user based on how many reports of malicious activity the website had.
+                if stats['malicious'] > 0 and stats['malicious'] <= 5:
+                    insertText(T, self.websiteScan_lilMalicious)
+                if stats['malicious'] >= 6:
+                    insertText(T, self.websiteScan_veryMalicious)
+                if stats['malicious'] == 0:
+                    insertText(T, self.websiteScan_nonMalicious)
+        t = Thread(target=lambda:scan(link)) # this was used to prevent the tkinter tab from not responding when changing onto a different tab (meaning it will remain active in the background)
+        t.start()
+        
 
 class showAdvice(ck.CTkFrame): #inherits root window to prevent additional windows popping up each time the class is called upon
     advicePhishing = "PHISHING TIPS:\nBe cautious with emails. Some emails may ask you to visit links. Check the sender's email address and if you don't recognise it, don't click on anything. If you do recognise it but it seems suspicious to you, verify the authenticity of it by speaking with the supposed sender of the email (in case of an organisation, call their support number as sender email addresses can be spoofed).\n\nEnable two-factor authentication on all your accounts to add an additional layer of security. By doing so, somebody that may have your login information to one of your accounts will not be able to access your accounts unless you provide them with the two-factor code (which in most cases, is received through text message.)\n\nBe cautious of what you share on social media. Overly sharing information may lead to people figuring out some of your personal information/passwords. For example, if you share your birth date with social media and your phone passcode happens to be the year of your birthday... it presents a serious risk to your security hence why it's best not to overly share things on social media.\n\nDon't share your personal information like passwords, credit cards etc over the phone or online (unless you know for certain that the website you're sharing this information with is reputable and can be trusted.\n\nDo not trust unsolicited calls or messages, especially from numbers that are claiming to be a part of an organisation (banks for example. Verify the authenticity of the phone call or text message by calling that particular organisation's (that the number might be posing as support number and ask about the call/message you may have received.)\n\nBe careful with links. When visting a website, ensure that the URL that appears in your browser's address bar matches up with what you think the actual website's URL is as although some websites may look the same, it could be an attempt from scammers trying to phish you for your information.\n\nOne of the best things you could do is to educate yourself about this topic, do some research online about phishing and learn about the common strategies that scammers use to lure victims in so you can identify them and prevent yourself from falling victim as well as be able to pass this information on to others, preventing them from falling victim too."
