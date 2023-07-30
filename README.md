@@ -9,3 +9,4 @@ The website and file scanning mode allow for the user to input their website/fil
 
 
 To use this program, you will need to install tkinter and customtkinter. This can be done through the command prompt: pip install tkinter     AND pip install customtkinter
+If you'd like to use iteration 1, you will also need to install pyfiglet. This can be done through the command prompt: pip install pyfiglet
